@@ -23,6 +23,8 @@
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/node": "^7.22.19",
-    "@babel/preset-env": "^7.23.8"
+    "@babel/preset-env": "^7.23.8",
+    "@prettier/plugin-pug": "^3.0.0",
+    "prettier": "^3.2.4"
   }
 }
