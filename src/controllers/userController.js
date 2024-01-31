@@ -43,6 +43,25 @@ export const postLogin = async(req, res) => {
     return res.redirect("/");
 }
 
+export const startGithubLogin = (req, res) => {
+
+    const baseUrl = 'https://github.com/login/oauth/authorize';
+    
+    // 해당 key값들은 github에서 요구하는 key들로 구성되어 있어야 한다.
+    const config = {
+        client_id : "639e0a51c5bb97ddaee7",
+        allow_signup:false,
+        scope:"read:user user:email",
+    }
+
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${baseUrl}?${params}`;
+
+    return res.redirect(finalUrl);
+}
+
+export const finishGithubLogin = (req, res) => {};
+
 
 export const edit = (req, res) => res.send("Edit User");
 export const remove = (req, res) => res.send("Remove User");
