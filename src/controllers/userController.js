@@ -29,7 +29,7 @@ export const getLogin = (req, res) => res.render("login", {pageTitle:"Login"});
 export const postLogin = async(req, res) => {
     const {username, password} = req.body;
     const pageTitle = "Login";
-    const user = await User.findOne({username});
+    const user = await User.findOne({username, socialOnly:false});
     if(!user){
         return res.status(400).render("login", {pageTitle, errorMessage:"An Account with this username dest not exists."})
     }
@@ -111,14 +111,10 @@ export const finishGithubLogin = async (req, res) => {
             return res.redirect("/login");    
         }
 
-        const existingUser = await User.findOne({email: emailObj.email});
-        if(existingUser){
-            req.session.loggedIn = true;
-            req.session.user = existingUser;
-            return res.redirect("/");
-        } else {
+        let user = await User.findOne({email: emailObj.email});
+        if(!user){
             // create an account
-            const user = await User.create({
+            user = await User.create({
                 name:userData.name, 
                 username: userData.login, 
                 email:emailObj.email,
@@ -126,11 +122,10 @@ export const finishGithubLogin = async (req, res) => {
                 socialOnly: true,
                 location:userData.location
             });
-
-            req.session.loggedIn = true;
-            req.session.user = user;
-            return res.redirect("/");
-        }
+        } 
+        req.session.loggedIn = true;
+        req.session.user = user;
+        return res.redirect("/");
         
     }else {
         return res.redirect("/login");
