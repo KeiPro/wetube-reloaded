@@ -49,7 +49,7 @@ export const startGithubLogin = (req, res) => {
     
     // 해당 key값들은 github에서 요구하는 key들로 구성되어 있어야 한다.
     const config = {
-        client_id : "639e0a51c5bb97ddaee7",
+        client_id : process.env.GH_CLIENT,
         allow_signup:false,
         scope:"read:user user:email",
     }
@@ -60,7 +60,30 @@ export const startGithubLogin = (req, res) => {
     return res.redirect(finalUrl);
 }
 
-export const finishGithubLogin = (req, res) => {};
+/*
+  깃헙 리 디렉션 사용 가이드 : https://docs.github.com/ko/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
+ */
+export const finishGithubLogin = async (req, res) => {
+    
+    const baseUrl = 'https://github.com/login/oauth/access_token';
+    
+    const config = {
+        client_id: process.env.GH_CLIENT,
+        client_secret: process.env.GH_SECRET,
+        code: req.query.code,
+    }
+
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${baseUrl}?${params}`
+    const data = await fetch(finalUrl, {
+        method:"POST",
+        headers:{
+            Accept: "application/json",
+        }
+    });
+    const json = await data.json();
+    console.log(json);
+};
 
 
 export const edit = (req, res) => res.send("Edit User");
