@@ -115,7 +115,7 @@ export const finishGithubLogin = async (req, res) => {
         if(!user){
             // create an account
             user = await User.create({
-                avatarUrl: userData.avatarUrl,
+                avatarUrl: userData.avatar_url,
                 name:userData.name, 
                 username: userData.login, 
                 email:emailObj.email,
@@ -134,7 +134,9 @@ export const finishGithubLogin = async (req, res) => {
 };
 
 
+export const logout = (req, res) => {
+    req.session.destroy();
+    return res.redirect("/");
+};
 export const edit = (req, res) => res.send("Edit User");
-export const remove = (req, res) => res.send("Remove User");
-export const logout = (req, res) => res.send("Log out");
 export const see = (req, res) => res.send("See User");
