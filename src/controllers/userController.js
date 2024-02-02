@@ -221,6 +221,77 @@ export const finishKakaoLogin = async (req, res) => {
     }
 }
 
+export const startNaverLogin = (req, res) => {
+
+    const baseUrl = "https://nid.naver.com/oauth2.0/authorize";
+    
+    const config = {
+        response_type : 'code',
+        client_id: process.env.NAVER_CLIENT,
+        state:'STATE_STRING',
+        redirect_uri:'http://localhost:4000/users/naver/finish',
+    }
+    
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${baseUrl}?${params}`;
+
+    return res.redirect(finalUrl);
+}
+
+export const finishNaverLogin = async (req, res) => {
+    const requestTokenBaseUrl = "https://nid.naver.com/oauth2.0/token";
+
+    const config = {
+        grant_type: 'authorization_code',
+        client_id:process.env.NAVER_CLIENT,
+        client_secret:process.env.NAVER_SECRET,
+        code:req.query.code,
+    }
+
+    const params = new URLSearchParams(config).toString();
+    const requestTokenURL = `${requestTokenBaseUrl}?${params}`;
+
+    const requestToken = await (await fetch(requestTokenURL, {
+        method: "POST",
+    })).json();
+
+    if(!requestToken.hasOwnProperty('access_token'))
+        return res.redirect('/login');
+    
+    const {access_token} = requestToken;
+
+    const callAPIBaseURL = 'https://openapi.naver.com/v1/nid/me';
+
+    const requestUser = await(await fetch(callAPIBaseURL, {
+        method: 'POST',
+        headers: {
+            Authorization : `Bearer ${access_token}`,
+        },
+    })).json();
+
+    if(!requestUser)
+        return res.redirect('/login');
+
+    let user = await User.findOne({email:requestUser.response.email});
+    if(!user)
+    {
+        const userInfo = requestUser.response;
+        user = await User.create({
+            email: userInfo.email,
+            avatarUrl: userInfo.profile_image,
+            socialOnly: true,
+            username: userInfo.name,
+            password: '',
+            name: userInfo.name,
+            location: '',
+        });
+    }
+    
+    req.session.loggedIn = true;
+    req.session.user = user;
+    return res.redirect('/');
+}
+
 export const logout = (req, res) => {
     req.session.destroy();
     return res.redirect("/");
