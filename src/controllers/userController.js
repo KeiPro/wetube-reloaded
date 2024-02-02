@@ -76,18 +76,17 @@ export const finishGithubLogin = async (req, res) => {
 
     const params = new URLSearchParams(config).toString();
     const finalUrl = `${baseUrl}?${params}`
-    const tokenRequest = await(await fetch(finalUrl, {
+    const tokenRequest = await(
+        await fetch(finalUrl, {
         method:"POST",
         headers:{
             Accept: "application/json",
         }
-    })).json();
-    // const json = await data.json();
-    //res.send(JSON.stringify(json));
+    })
+    ).json();
 
     if("access_token" in tokenRequest)
     {
-        // access api
         const {access_token} = tokenRequest;
         const apiUrl = "https://api.github.com";
         const userData = await (
@@ -97,7 +96,6 @@ export const finishGithubLogin = async (req, res) => {
             },
         })
         ).json();
-        console.log(userData);
         const emailData = await (
             await fetch(`${apiUrl}/user/emails`, {
             headers:{
@@ -105,8 +103,7 @@ export const finishGithubLogin = async (req, res) => {
             },
         })
         ).json();
-        const emailObj = emailData.find
-        (email => email.primary === true && email.verified === true);
+        const emailObj = emailData.find(email => email.primary === true && email.verified === true);
         if(!emailObj){
             return res.redirect("/login");    
         }
@@ -133,6 +130,96 @@ export const finishGithubLogin = async (req, res) => {
     }
 };
 
+export const startKakaoLogin = (req, res) => {
+    const baseUrl = "https://kauth.kakao.com/oauth/authorize";
+
+    const config = {
+        response_type: "code",
+        client_id : process.env.KAKAO_CLIENT,
+        redirect_uri:"http://localhost:4000/users/kakao/finish",
+    }
+
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${baseUrl}?${params}`;
+
+    return res.redirect(finalUrl);
+}
+
+export const finishKakaoLogin = async (req, res) => {
+    const baseUrl = "https://kauth.kakao.com/oauth/token";
+
+    let config = {
+        grant_type: "authorization_code",
+        client_id: process.env.KAKAO_CLIENT,
+        redirect_uri: "http://localhost:4000/users/kakao/finish",
+        code: req.query.code
+    }
+
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${baseUrl}?${params}`;
+
+    const tokenRequest = await(await fetch(finalUrl, {
+        method: "POST",
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        }
+    })).json();
+
+    if("access_token" in tokenRequest)
+    {
+        const {access_token} = tokenRequest;
+        const apiUrl = "https://kapi.kakao.com/v2/user/me";
+        
+        // property_keys를 JSON 배열로 준비
+        const propertyKeys = JSON.stringify(["kakao_account.email"]);
+
+        const emailData = await (await fetch(apiUrl, {
+            method: 'POST', // 명시적으로 POST 요청을 사용
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: `property_keys=${encodeURIComponent(propertyKeys)}` // 데이터를 URL 인코딩하여 body에 추가
+        })).json();
+        
+        const kakaoAccount = emailData.kakao_account;
+        const isValidEmail = kakaoAccount.is_email_valid &&
+                             kakaoAccount.is_email_verified
+        
+        if(!isValidEmail){
+            return res.redirect('/login');
+        }
+
+        let user = await User.findOne({email:kakaoAccount.email});
+        if(!user)
+        {
+            const userData = await(await fetch(apiUrl, {
+                headers:{
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Bearer ${access_token}`,
+                }
+            })).json();
+            
+            user = await User.create({
+                email: kakaoAccount.email,
+                avatarUrl: userData.kakao_account.profile.profile_image_url,
+                socialOnly: true, //유저가 Github로 로그인했는지 여부를 알기 위해서
+                username: userData.kakao_account.profile.nickname,
+                password: "",
+                name:userData.kakao_account.profile.nickname,
+                location: "",
+            });
+        }
+        
+        req.session.loggedIn = true;
+        req.session.user = user;
+        return res.redirect('/');
+    }
+    else
+    {
+        return res.redirect("/login");
+    }
+}
 
 export const logout = (req, res) => {
     req.session.destroy();
