@@ -301,7 +301,51 @@ export const getEdit = (req, res) => {
     return res.render("edit-profile", {pageTitle:"Edit Profile"});
 }
 
-export const postEdit = (req, res) => {
-    return res.render("edit-profile");
+export const postEdit = async (req, res) => {
+    
+    const {
+        session: {
+            user: {_id}, 
+        }, 
+        body: {name, email, username, location}
+    } = req;
+
+    const user = await User.findOne({_id});
+
+    const usernameIsChanged = user.username !== username;
+    const emailIsChanged = user.email !== email;
+    if (emailIsChanged)
+    {
+        const emailIsExist = await User.findOne({email});
+        if(emailIsExist)
+        {
+            console.log('The email already exists in the user database.');
+            return res.redirect('/users/edit');
+        }
+    }
+
+    if (usernameIsChanged)
+    {
+        const usernameIsExist = await User.findOne({username});
+        if(usernameIsExist)
+        {
+            console.log('The username already exists in the user database.');
+            return res.redirect('/users/edit');
+        }
+    }
+
+    const updateUser = await User.findByIdAndUpdate(
+        _id, 
+        {name, email, username, location}, 
+        {new:true}
+    );
+
+    // update target ?? username -> exist username? -> no -> update!
+                    //  email -> exist email? -> no -> update!
+                    // not changed -> redirect ('edit');
+
+
+    req.session.user = updateUser;
+    return res.redirect("/users/edit");
 }
 export const see = (req, res) => res.send("See User");
