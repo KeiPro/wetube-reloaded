@@ -1,4 +1,6 @@
 extends ../base
+include ../mixins/video
 
 block content
-    h1 hello
+    each videoItem in videos
+        +video(videoItem)
