@@ -305,12 +305,11 @@ export const postEdit = async (req, res) => {
     
     const {
         session: {
-            user: {_id}, 
+            user: {_id, avatarUrl}, 
         }, 
         body: {name, email, username, location},
-        file
+        file,
     } = req;
-    console.log(req.file);
     const user = await User.findOne({_id});
 
     const usernameIsChanged = user.username !== username;
@@ -337,14 +336,15 @@ export const postEdit = async (req, res) => {
 
     const updateUser = await User.findByIdAndUpdate(
         _id, 
-        {name, email, username, location}, 
+        {
+            avatarUrl: file ? file.path : avatarUrl, 
+            name, 
+            email, 
+            username, 
+            location
+        }, 
         {new:true}
     );
-
-    // update target ?? username -> exist username? -> no -> update!
-                    //  email -> exist email? -> no -> update!
-                    // not changed -> redirect ('edit');
-
 
     req.session.user = updateUser;
     return res.redirect("/users/edit");
