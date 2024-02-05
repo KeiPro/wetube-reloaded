@@ -9,13 +9,16 @@ const userSchema = new mongoose.Schema({
     password: {type:String},
     name:{type:String, required:true},
     location: String,
+    videos: [
+        {type:mongoose.Schema.Types.ObjectId, ref:"Video" },
+    ]
 });
 
 userSchema.pre('save', async function(){
-    console.log("입력한 비밀번호 : ", this.password);
-    // 5의 의미는 5번 해싱을 진행한다는 뜻.
-    this.password = await bcrypt.hash(this.password, 5);
-    console.log("해시된 : ", this.password);
+    // property가 하나라도 수정되면 isModified가 true.
+    if(this.isModified("password")){
+        this.password = await bcrypt.hash(this.password, 5);
+    }
 })
 
 const User = mongoose.model('User', userSchema);
