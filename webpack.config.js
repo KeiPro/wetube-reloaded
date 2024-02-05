@@ -17,6 +17,10 @@ module.exports = {
                         presets: [["@babel/preset-env", {targets: "defaults"}]],
                     }
                 }
+            },
+            {
+                test: /\.scss$/,
+                use: ["style-loader", "css-loader", "sass-loader"],
             }
         ]
     }
