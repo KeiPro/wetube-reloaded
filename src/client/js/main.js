@@ -1,3 +1,4 @@
 import "../scss/styles.scss";
 
-console.log("hi");
+alert("it works");
+console.log("keipro hihi");
