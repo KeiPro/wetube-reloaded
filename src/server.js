@@ -25,6 +25,7 @@ app.use((req, res, next) => {
 // express application이 form의 value들을 이해할 수 있도록 하고, 
 // 우리가 쓸 수 있는 자바스크립트 형식으로 변형시켜 줄 수 있다.
 app.use(express.urlencoded({extended:true})); 
+app.use(express.json()); 
 
 app.use(session({
     secret: process.env.COOKEI_SECRET,
