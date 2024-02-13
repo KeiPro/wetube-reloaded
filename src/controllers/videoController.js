@@ -136,6 +136,7 @@ export const createComment = async (req, res) => {
     } = req;
 
     const video = await Video.findById(id);
+    const userDB = await User.findById(user._id);
 
     if(!video){
         return res.sendStatus(404);
@@ -149,6 +150,40 @@ export const createComment = async (req, res) => {
 
     video.comments.push(comment._id);
     video.save();
+
+    userDB.comments.push(comment._id);
+    userDB.save();
     //201 Created뜻.
     return res.status(201).json({newCommentId:comment._id});
+}
+
+export const deleteComment = async (req, res) => {
+    
+    const {commentId} = req.query;
+    const userID = req.session.user._id;
+    const videoId = req.params.id;
+
+    const comment = await Comment.findById(commentId);
+    if(!comment){
+        console.log("not exist comment");
+        return res.status(404).send('Comment not found.');
+    }
+
+    if(String(comment.owner) !== String(userID))
+        return res.sendStatus(401);
+
+    // comment에서 삭제.
+    await Comment.findByIdAndDelete(commentId);
+
+    // 비디오 모델에서 삭제
+    const video = await Video.findById(videoId);
+    video.comments.splice(video.comments.indexOf(commentId), 1);
+    video.save();
+
+    // 유저에서도 삭제.
+    const user = await User.findById(userID);
+    user.comments.splice(user.comments.indexOf(commentId), 1);
+    user.save();
+
+    return res.sendStatus(200);
 }
