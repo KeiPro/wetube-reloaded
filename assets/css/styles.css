@@ -152,6 +152,12 @@ footer {
   background-color: white;
   color: black;
   margin-bottom: 10px;
+  position: relative;
+}
+
+.delete-comment {
+  position: absolute;
+  right: 10px;
 }
 
 .empty__message {

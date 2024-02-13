@@ -67,33 +67,6 @@ if(deleteButtons){
     });
 }
 
-const handleTestSubmit = async (event) => {
-    event.preventDefault();
-
-    let i = 0;
-    const {id} = videoContainer.dataset;
-
-    for(i=0 ; i <10; i++)
-    {
-        const text = `test${i}`;
-
-        console.log(text);
-    
-        const response = await fetch(`/api/videos/${id}/comment`, {
-            method:"POST",
-            headers: {
-                "Content-Type" : "application/json",
-            },
-            body: JSON.stringify({text})
-        });
-    
-        if(response.status === 201){
-            const {newCommentId} = await response.json();
-            addComment(text, newCommentId);
-        }
-    }
-}
-
 if(form){
     form.addEventListener('submit', handleSubmit);
 }
