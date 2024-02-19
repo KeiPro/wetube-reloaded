@@ -137,7 +137,7 @@ export const startKakaoLogin = (req, res) => {
     const config = {
         response_type: "code",
         client_id : process.env.KAKAO_CLIENT,
-        redirect_uri:"http://localhost:4000/users/kakao/finish",
+        // redirect_uri:"http://localhost:4000/users/kakao/finish",
     }
 
     const params = new URLSearchParams(config).toString();
