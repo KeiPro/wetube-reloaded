@@ -137,7 +137,7 @@ export const startKakaoLogin = (req, res) => {
     const config = {
         response_type: "code",
         client_id : process.env.KAKAO_CLIENT,
-        // redirect_uri:"http://localhost:4000/users/kakao/finish",
+        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/kakao/finish`,
     }
 
     const params = new URLSearchParams(config).toString();
@@ -152,7 +152,7 @@ export const finishKakaoLogin = async (req, res) => {
     let config = {
         grant_type: "authorization_code",
         client_id: process.env.KAKAO_CLIENT,
-        redirect_uri: "http://localhost:4000/users/kakao/finish",
+        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/kakao/finish`,
         code: req.query.code
     }
 
@@ -230,7 +230,7 @@ export const startNaverLogin = (req, res) => {
         response_type : 'code',
         client_id: process.env.NAVER_CLIENT,
         state:'STATE_STRING',
-        redirect_uri:'http://localhost:4000/users/naver/finish',
+        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/naver/finish`,
     }
     
     const params = new URLSearchParams(config).toString();
