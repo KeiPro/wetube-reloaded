@@ -131,13 +131,28 @@ export const finishGithubLogin = async (req, res) => {
     }
 };
 
+app.get('/image-proxy', async (req, res) => {
+    // 클라이언트로부터 받은 외부 이미지 URL
+    const imageUrl = req.query.url;
+    try {
+        const response = await fetch(imageUrl);
+        const body = await response.buffer();
+        // 응답 타입을 설정
+        res.setHeader('Content-Type', response.headers.get('Content-Type'));
+        res.send(body);
+    } catch (error) {
+        console.error('Error fetching image:', error);
+        res.status(500).send('Error fetching image');
+    }
+});
+
 export const startKakaoLogin = (req, res) => {
     const baseUrl = "https://kauth.kakao.com/oauth/authorize";
 
     const config = {
         response_type: "code",
         client_id : process.env.KAKAO_CLIENT,
-        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/kakao/finish`,
+        redirect_uri:`${process.env.SERVER_URL}/users/kakao/finish`,
     }
 
     const params = new URLSearchParams(config).toString();
@@ -152,7 +167,7 @@ export const finishKakaoLogin = async (req, res) => {
     let config = {
         grant_type: "authorization_code",
         client_id: process.env.KAKAO_CLIENT,
-        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/kakao/finish`,
+        redirect_uri:`${process.env.SERVER_URL}/users/kakao/finish`,
         code: req.query.code
     }
 
@@ -203,7 +218,8 @@ export const finishKakaoLogin = async (req, res) => {
             
             user = await User.create({
                 email: kakaoAccount.email,
-                avatarUrl: `/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
+                //avatarUrl: `/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
+                avatarUrl: `${process.env.SERVER_URL}/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
                 socialOnly: true, //유저가 Github로 로그인했는지 여부를 알기 위해서
                 username: userData.kakao_account.profile.nickname,
                 password: "",
@@ -230,7 +246,7 @@ export const startNaverLogin = (req, res) => {
         response_type : 'code',
         client_id: process.env.NAVER_CLIENT,
         state:'STATE_STRING',
-        redirect_uri:`${process.env.LOGIN_REDIRECT_URI}/users/naver/finish`,
+        redirect_uri:`${process.env.SERVER_URL}/users/naver/finish`,
     }
     
     const params = new URLSearchParams(config).toString();
