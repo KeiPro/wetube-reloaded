@@ -131,8 +131,7 @@ export const finishGithubLogin = async (req, res) => {
     }
 };
 
-app.get('/image-proxy', async (req, res) => {
-    // 클라이언트로부터 받은 외부 이미지 URL
+export const handleProxy = async(req, res) => {
     const imageUrl = req.query.url;
     try {
         const response = await fetch(imageUrl);
@@ -144,7 +143,7 @@ app.get('/image-proxy', async (req, res) => {
         console.error('Error fetching image:', error);
         res.status(500).send('Error fetching image');
     }
-});
+}
 
 export const startKakaoLogin = (req, res) => {
     const baseUrl = "https://kauth.kakao.com/oauth/authorize";
