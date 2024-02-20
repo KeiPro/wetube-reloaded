@@ -294,7 +294,7 @@ export const finishNaverLogin = async (req, res) => {
         const userInfo = requestUser.response;
         user = await User.create({
             email: userInfo.email,
-            avatarUrl: userInfo.profile_image,
+            avatarUrl: `${process.env.SERVER_URL}/users/image-proxy?url=${encodeURIComponent(userInfo.profile_image)}`,
             socialOnly: true,
             username: userInfo.name,
             password: '',
