@@ -10,8 +10,6 @@ const s3 = new S3Client({
     }
 });
 
-
-
 const s3ImageUploader = multerS3({
     s3: s3,
     bucket: 'wetube-ai',
