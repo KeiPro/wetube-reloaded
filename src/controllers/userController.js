@@ -218,7 +218,7 @@ export const finishKakaoLogin = async (req, res) => {
             user = await User.create({
                 email: kakaoAccount.email,
                 //avatarUrl: `/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
-                avatarUrl: `${process.env.SERVER_URL}/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
+                avatarUrl: `${process.env.SERVER_URL}/users/image-proxy?url=${encodeURIComponent(userData.kakao_account.profile.profile_image_url)}`,
                 socialOnly: true, //유저가 Github로 로그인했는지 여부를 알기 위해서
                 username: userData.kakao_account.profile.nickname,
                 password: "",
