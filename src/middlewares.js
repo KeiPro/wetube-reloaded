@@ -1,4 +1,20 @@
 import multer from 'multer';
+import multerS3 from 'multer-s3';
+import { S3Client } from "@aws-sdk/client-s3";
+
+const s3 = new S3Client({
+    region: "ap-northeast-2",
+    credentials: {
+        accessKeyId: process.env.AWS_ID,
+        secretAccessKey: process.env.AWS_SECRET,
+    }
+});
+
+const multerUploader = multerS3({
+    s3: s3,
+    bucket: 'wetube-ai',
+    acl: 'public-read',
+});
 
 export const localsMiddleware = (req, res, next) => {
     res.locals.loggedIn = Boolean(req.session.loggedIn);
@@ -28,11 +44,15 @@ export const publicOnlyMiddleware = (req, res, next) => {
 }
 
 export const avatarUpload = multer({dest:"uploads/avatars/",
- limits: {
-    fileSize: 3 * 1000 * 1000, //3 megabyte
-}});
+    limits: {
+        fileSize: 3 * 1000 * 1000, //3 megabyte
+    },
+    storage:   multerUploader,
+});
 
 export const videoUpload = multer({dest:"uploads/videos/",
- limits: {
+    limits: {
     fileSize: 10 * 1000 * 1000, //10 megabyte
-}})
+    },
+    storage: multerUploader,
+});
