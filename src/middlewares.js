@@ -10,9 +10,15 @@ const s3 = new S3Client({
     }
 });
 
-const multerUploader = multerS3({
+const s3ImageUploader = multerS3({
     s3: s3,
-    bucket: 'wetube-ai',
+    bucket: 'wetube-ai/images',
+    acl: 'public-read',
+});
+
+const s3VideoUploader = multerS3({
+    s3: s3,
+    bucket: 'wetube-ai/videos',
     acl: 'public-read',
 });
 
@@ -47,12 +53,12 @@ export const avatarUpload = multer({dest:"uploads/avatars/",
     limits: {
         fileSize: 3 * 1000 * 1000, //3 megabyte
     },
-    storage: multerUploader,
+    storage: s3ImageUploader,
 });
 
 export const videoUpload = multer({dest:"uploads/videos/",
     limits: {
     fileSize: 10 * 1000 * 1000, //10 megabyte
     },
-    storage: multerUploader,
+    storage: s3VideoUploader,
 });
