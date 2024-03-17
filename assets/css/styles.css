@@ -339,6 +339,13 @@ input[type=submit]:disabled,
   font-size: 18px;
 }
 
+.edit-profile-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .edit-profile__form label {
   font-size: 14px;
   margin-bottom: 10px;

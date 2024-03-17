@@ -1,15 +1,16 @@
 extends base
 
 block content
-    img(src=loggedInUser.avatarUrl, width="100", height="100", crossorigin="anonymous").edit-profile__form
-    form(method="POST" enctype="multipart/form-data")
-        label(for="avatar") Avatar
-        input(type="file", id="avatar", name="avatar" accept=".png, .jpg, .jepg")
-        input(name="name", type="text", placeholder="input name", required, value=loggedInUser.name)
-        input(name="email", type="email", placeholder="input email", required, value=loggedInUser.email)
-        input(name="username", type="text", placeholder="input username", required, value=loggedInUser.username)
-        input(name="location", type="text", placeholder="input location", required, value=loggedInUser.location)
-        input(type="submit", value="Update Profile")
-        if !loggedInUser.socialOnly
-            div.edit-profile__password
-                a(href="change-password") Change Password &rarr;
+    div.edit-profile-div
+        img(src=loggedInUser.avatarUrl, width="100", height="100", crossorigin="anonymous").edit-profile__form
+        form(method="POST" enctype="multipart/form-data")
+            label(for="avatar") Avatar
+            input(type="file", id="avatar", name="avatar" accept=".png, .jpg, .jepg")
+            input(name="name", type="text", placeholder="input name", required, value=loggedInUser.name)
+            input(name="email", type="email", placeholder="input email", required, value=loggedInUser.email)
+            input(name="username", type="text", placeholder="input username", required, value=loggedInUser.username)
+            input(name="location", type="text", placeholder="input location", required, value=loggedInUser.location)
+            input(type="submit", value="Update Profile")
+            if !loggedInUser.socialOnly
+                div.edit-profile__password
+                    a(href="change-password") Change Password &rarr;
