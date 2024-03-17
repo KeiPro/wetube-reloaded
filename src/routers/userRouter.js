@@ -1,5 +1,5 @@
 import express from "express";
-import { getEdit, postEdit, logout, see, startGithubLogin, finishGithubLogin, startKakaoLogin, finishKakaoLogin, startNaverLogin, finishNaverLogin, getChangePassword, postChangePassword, handleProxy } from "../controllers/userController";
+import { getEdit, postEdit, logout, see, startGithubLogin, finishGithubLogin, startKakaoLogin, finishKakaoLogin, startNaverLogin, finishNaverLogin, getChangePassword, postChangePassword, handleProxy, getGemini, postGemini } from "../controllers/userController";
 import {protectorMiddleware, publicOnlyMiddleware, avatarUpload} from "../middlewares";
 
 const userRouter = express.Router();
@@ -14,6 +14,7 @@ userRouter.get("/kakao/start", publicOnlyMiddleware, startKakaoLogin);
 userRouter.get("/kakao/finish", publicOnlyMiddleware, finishKakaoLogin);
 userRouter.get("/naver/start", publicOnlyMiddleware, startNaverLogin);
 userRouter.get("/naver/finish", publicOnlyMiddleware, finishNaverLogin);
+userRouter.route("/gemini").all(protectorMiddleware).get(getGemini).post(postGemini);
 
 userRouter.get("/:id", see);
 

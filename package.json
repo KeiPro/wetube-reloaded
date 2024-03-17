@@ -24,6 +24,7 @@
     "@aws-sdk/client-s3": "^3.186.0",
     "@ffmpeg/core": "^0.8.5",
     "@ffmpeg/ffmpeg": "^0.9.7",
+    "@google/generative-ai": "^0.3.0",
     "bcrypt": "^5.1.1",
     "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.1",

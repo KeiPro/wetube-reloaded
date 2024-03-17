@@ -1,0 +1,12 @@
+extends base
+
+block content
+    .chat-container
+        .gemini-message
+            span 
+        form.chat-form(method="post")
+          input(type="text", name="message", placeholder="Ask AI anything you want to know!", required)
+          button(type="submit") Send
+
+block scripts 
+    script(src="/static/js/gemini.js")

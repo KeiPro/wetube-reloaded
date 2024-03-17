@@ -6,6 +6,7 @@ html(lang="ko")
         title #{pageTitle} | Wetube
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
         link(rel="stylesheet" href="/static/css/styles.css")
+        script(src="https://cdn.jsdelivr.net/npm/marked/marked.min.js") // 1. marked cdn에서 불리는 처리.
     body
         if messages.error
             +message("error", messages.error)
@@ -15,7 +16,7 @@ html(lang="ko")
             +message("success", messages.success)
         include partials/header
         main
-            block content
+            block content // 2. 이 위치에서 gemini.pug가 불리고
         include partials/footer
     script(src="/static/js/main.js")
-    block scripts
+    block scripts // 3. gemini.pug의 이 부분에서 block scripts에서 gemini.js를 임포트 하고 있음.

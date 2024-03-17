@@ -2,6 +2,7 @@ import User from "../models/User";
 import Video from "../models/Video"
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const getJoin = (req, res) => res.render("join", {pageTitle:"Join"});
 export const postJoin = async (req, res) => {
@@ -414,3 +415,25 @@ export const see = async (req, res) => {
         user
     });
 };
+
+export const getGemini = async(req,res) => {
+    return res.render("gemini", {pageTitle:"Gemini Page"});
+}
+
+export const postGemini = async(req, res) => {
+    try{
+        const { message } = req.body; // 클라이언트로부터 받은 메시지
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
+        
+        const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+    
+        const result = await model.generateContent(message); // 사용자의 메시지를 처리
+    
+        const geminiText = await result.response.text(); // 비동기 호출 결과를 기다립니다.
+    
+        res.json({ reply: geminiText });    
+    } catch (error) {
+        res.json({ reply: "The request was blocked due to safety concerns. Please try a different input." });
+    }
+    
+}
